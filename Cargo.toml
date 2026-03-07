@@ -1,0 +1,33 @@
+[package]
+name = "pleme-bm-syntax"
+version = "0.1.0"
+edition = "2021"
+description = "Tree-sitter powered Zsh syntax highlighting — native module (.dylib/.so)"
+license = "MIT"
+authors = ["Pleme Team <team@pleme.io>"]
+repository = "https://github.com/pleme-io/bm-syntax"
+homepage = "https://github.com/pleme-io/bm-syntax"
+keywords = ["zsh", "syntax-highlighting", "tree-sitter", "shell"]
+categories = ["command-line-utilities", "text-processing"]
+exclude = ["module/", "target/", "result-*", "Cargo.nix", "flake.nix", "flake.lock"]
+
+[lib]
+name = "bm_syntax"
+crate-type = ["cdylib", "lib"]
+
+[[bin]]
+name = "bm-syntax"
+path = "src/main.rs"
+
+[dependencies]
+tree-sitter = "0.25"
+tree-sitter-bash = "0.23"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+figment = { version = "0.10", features = ["yaml", "env"] }
+
+[profile.release]
+opt-level = 2
+lto = true
+codegen-units = 1
+strip = true
