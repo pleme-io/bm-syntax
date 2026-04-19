@@ -24,7 +24,7 @@ tree-sitter = "0.25"
 tree-sitter-bash = "0.23"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
-figment = { version = "0.10", features = ["yaml", "env"] }
+thiserror = "2"
 
 [profile.release]
 opt-level = 2

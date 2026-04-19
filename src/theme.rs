@@ -1,7 +1,3 @@
-use figment::{
-    providers::{Format, Yaml},
-    Figment,
-};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
@@ -47,9 +43,39 @@ impl Default for Theme {
     }
 }
 
+/// Error loading a theme file.
+#[derive(Debug, thiserror::Error)]
+pub enum ThemeError {
+    #[error("read {path}: {source}")]
+    Io {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("parse {path}: {source}")]
+    Parse {
+        path: String,
+        #[source]
+        source: serde_yaml::Error,
+    },
+}
+
 impl Theme {
-    pub fn load(path: &Path) -> Result<Self, figment::Error> {
-        Figment::new().merge(Yaml::file(path)).extract()
+    /// Load a theme YAML file.
+    ///
+    /// This is a simple single-file read — no env-var layering, no
+    /// defaults merging. The previous figment wrapper was overkill for
+    /// that; `serde_yaml::from_str` after a raw file read keeps the
+    /// dep graph small.
+    pub fn load(path: &Path) -> Result<Self, ThemeError> {
+        let content = std::fs::read_to_string(path).map_err(|source| ThemeError::Io {
+            path: path.display().to_string(),
+            source,
+        })?;
+        serde_yaml::from_str(&content).map_err(|source| ThemeError::Parse {
+            path: path.display().to_string(),
+            source,
+        })
     }
 
     /// Convert a hex color like "#88C0D0" to ANSI 24-bit escape sequence
