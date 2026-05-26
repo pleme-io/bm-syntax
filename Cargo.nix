@@ -237,7 +237,7 @@ rec {
       };
       "pleme-bm-syntax" = rec {
         crateName = "pleme-bm-syntax";
-        version = "0.1.0";
+        version = "0.1.1";
         edition = "2021";
         crateBin = [
           {
